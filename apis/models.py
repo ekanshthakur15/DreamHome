@@ -46,12 +46,14 @@ class Clientrental(models.Model):
 
 
 class Lease(models.Model):
-    cno = models.ForeignKey(Clientrental, models.DO_NOTHING,
-                            db_column='Cno', blank=True, null=True)
-    pno = models.ForeignKey('Property', models.DO_NOTHING,
-                            db_column='Pno', blank=True, null=True)
+    leaseid = models.CharField(
+        db_column='LeaseId', primary_key=True, max_length=255)
+    cno = models.CharField(
+        db_column='Cno', max_length=255, blank=True, null=True)
+    pno = models.CharField(
+        db_column='Pno', max_length=255, blank=True, null=True)
     mrent = models.FloatField(db_column='Mrent', blank=True, null=True)
-    paymentmethod = models.CharField( 
+    paymentmethod = models.CharField(
         db_column='PaymentMethod', max_length=255, blank=True, null=True)
     rdate = models.DateField(db_column='Rdate', blank=True, null=True)
     fdate = models.DateField(db_column='Fdate', blank=True, null=True)
