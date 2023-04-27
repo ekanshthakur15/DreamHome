@@ -11,4 +11,5 @@ urlpatterns = [
     path('property/register/', PropertyCreateView.as_view()),  # post property
     path('branch/<str:br_id>/', BranchDetailView.as_view()), # Get branch detail
     path('property_search/search/', PropertyListView.as_view()),
+    path('property_detail/<str:pnum>/', PropertyDetailView.as_view())
 ]

@@ -63,17 +63,25 @@ class LeaseCreateView(APIView):
 class BranchDetailView(APIView):
     def get(self, request, br_id):
         list = []
+        branch = Branches.objects.get(bnumber = br_id)
         queryset = Staff.objects.filter(brno = br_id)
         for staff in queryset:
-            data = {
+            staff_data = {
                 "staff_no": staff.staffno,
                 "staff_name": staff.fname,
                 "position": staff.sposition
             }
-            list.append(data)
-        return Response(list, status= status.HTTP_200_OK)
+            list.append(staff_data)
+        data = {
+            "branch_no":br_id,
+            "branch_address": branch.baddress,
+            "mobile1": branch.mobileno1,
+            "mobile2": branch.mobileno2,
+            "mobile3": branch.mobileno3,
+            "staff": list
+        }
+        return Response(data, status= status.HTTP_200_OK)
     
-    # Need to be discussed and then get work done
 class PropertyListView(APIView):
 
     def get(self, request):
@@ -93,3 +101,26 @@ class PropertyListView(APIView):
             'pnumber': p.pnumber, 'ptype': p.ptype, 'rooms': p.rooms, 'rent': p.rent, 'paddress': p.paddress, 'city': p.city }for p in properties
         ]
         return Response({'data': data})
+
+#incomplete
+class PropertyDetailView(APIView):
+    def get(self, request, pnum):
+        property = Property.objects.get(pnumber = pnum)
+        clients = property.clientrental_set.all()
+        clients_info = []
+        if clients:
+            for client in clients:
+                info = {
+                    "cnumber": client.cnumber,
+                    "cname":client.cname,
+                    "comment": client.comments
+                }
+                clients_info.append(info)
+        data = {
+            "pnumber" : property.pnumber,
+            "ptype": property.ptype,
+            "paddress": property.paddress,
+            "rent": property.rent,
+            "clients" : clients_info,
+        }
+        return Response(data)
