@@ -9,7 +9,8 @@ urlpatterns = [
     path('branch/', BranchCreateView.as_view()),  # post branch
     path('lease/create/', LeaseCreateView.as_view()),  # post lease
     path('property/register/', PropertyCreateView.as_view()),  # post property
-    path('branch/<str:br_id>/', BranchDetailView.as_view()), # Get branch detail
+    path('branch/<str:br_id>/', BranchDetailView.as_view()), # get branch detail
     path('property_search/', PropertyListView.as_view()),
-    path('property_detail/<str:pnum>/', PropertyDetailView.as_view()) #to get the 
+    path('property_detail/<str:pnum>/', PropertyDetailView.as_view()), #to get the property detail
+    path('branch_list/', BranchListView.as_view()),
 ]

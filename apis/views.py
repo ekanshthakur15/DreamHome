@@ -126,7 +126,7 @@ class PropertyListView(APIView):
             list.append(data)
         return Response(list, status= status.HTTP_200_OK)
 
-#incomplete
+
 class PropertyDetailView(APIView):
     def get(self, request, pnum):
         property = Property.objects.get(pnumber = pnum)
@@ -148,3 +148,22 @@ class PropertyDetailView(APIView):
             "clients" : clients_info,
         }
         return Response(data)
+    
+
+class BranchListView(APIView):
+    def get(self, request):
+        try:
+            queryset = Branches.objects.all()
+        except Branches.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        branch_names = []
+        for branch in queryset:
+            data = {
+                "bnumber": branch.bnumber,
+                "baddress": branch.baddress,
+                "city": branch.city
+            }
+            branch_names.append(data)
+
+        return Response(branch_names, status=status.HTTP_200_OK)
