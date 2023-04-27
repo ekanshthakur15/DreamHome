@@ -82,25 +82,49 @@ class BranchDetailView(APIView):
         }
         return Response(data, status= status.HTTP_200_OK)
     
+
 class PropertyListView(APIView):
 
-    def get(self, request):
-        search_query  = request.GET.get("q", '')
-        tokens = [t.strip() for t in search_query.split(',')]
-        q_objects = Q()
-        for token in tokens:
-            q_objects |= Q(pnumber__icontains = token)
-            q_objects |= Q(ptype__icontains = token)
-            q_objects |= Q(rent__icontains = token)
-            q_objects |= Q(rooms__icontains = token)
-            q_objects |= Q(paddress__icontains = token)
-            q_objects |= Q(pin__icontains = token)
-            q_objects |= Q(city__icontains = token)
-        properties = Property.objects.filter(q_objects)
-        data = [{
-            'pnumber': p.pnumber, 'ptype': p.ptype, 'rooms': p.rooms, 'rent': p.rent, 'paddress': p.paddress, 'city': p.city }for p in properties
-        ]
-        return Response({'data': data})
+    def post(self, request, format=None):
+
+        ptype = request.data.get('ptype', None)
+        city = request.data.get('city', None)
+        rent = request.data.get('rent', None)
+        rooms = request.data.get('rooms', None)
+        address = request.data.get('paddress', None)
+        pin = request.data.get('pin', None)
+        pnumber = request.data.get('pnumber', None)
+
+        q_filters = Q()
+        if ptype:
+            q_filters &= Q(ptype__icontains=ptype)
+        if city:
+            q_filters &= Q(city__icontains=city)
+        if rent:
+            q_filters &= Q(rent__lte=rent)
+        if rooms:
+            q_filters &= Q(rooms =rooms)
+        if address:
+            q_filters &= Q(paddress_icontains = address)
+        if pin:
+            q_filters &= Q(paddress_icontains = pin)
+        if pnumber:
+            q_filters &= Q(paddress_icontains = pnumber)
+        
+        properties = Property.objects.filter(q_filters)
+
+        list = []
+        for property in properties:
+            data = {
+                "pnumber":property.pnumber,
+                "ptype": property.ptype,
+                "rent": property.rent,
+                "address": property.paddress,
+                "isavailable": property.isavailable,
+                "rooms": property.rooms
+            }
+            list.append(data)
+        return Response(list, status= status.HTTP_200_OK)
 
 #incomplete
 class PropertyDetailView(APIView):

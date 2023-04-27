@@ -37,8 +37,6 @@ class Clientrental(models.Model):
     rdate = models.DateField(db_column='Rdate', blank=True, null=True)
     comments = models.CharField(
         db_column='Comments', max_length=255, blank=True, null=True)
-    pno = models.ForeignKey('Property', models.DO_NOTHING,
-                            db_column='pno', blank=True, null=True)
 
     def __str__(self) -> str:
         return self.cnumber
@@ -102,8 +100,6 @@ class Property(models.Model):
     brno = models.ForeignKey(Branches, models.DO_NOTHING,
                              db_column='BrNo', blank=True, null=True)
     isavailable = models.IntegerField(db_column='isAvailable')
-    cno = models.ForeignKey(Clientrental, models.DO_NOTHING,
-                            db_column='Cno', blank=True, null=True)
 
     class Meta:
         managed = False
