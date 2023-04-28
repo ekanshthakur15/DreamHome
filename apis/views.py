@@ -71,8 +71,10 @@ class LeaseCreateView(APIView):
             if property.isavailable == 1:
                 property.isavailable = 0
                 property.save()
-                invoice = Invoice.objects.create(pno = pno, cno = cno)
-                invoice.save()
+                invoice = (Invoice.objects.get(pno = pno, cno = cno), None)
+                if invoice is None:
+                    invoice = Invoice.objects.create(pno=pno, cno=cno)
+                    invoice.save()
                 serializer.save()
             else:
                 return Response({"error": "property not available"},status=status.HTTP_400_BAD_REQUEST)
@@ -193,15 +195,15 @@ class BranchListView(APIView):
 
         return Response(branch_names, status=status.HTTP_200_OK)
     
-class CommentView(APIView):
+class AddCommentView(APIView):
     def put(self, request):
         try:
             invoice = Invoice.objects.get(pno = request.data['pno'], cno = request.data['cno'])
         except Invoice.DoesNotExist:
             return Response({"error": "no invoice found"}, status= status.HTTP_404_NOT_FOUND)
-        invoice.update(comment = request.data["comment"])
+        invoice.comments = request.data["comments"]
         invoice.save()
-        return Response(status= status.HTTP_200_OK)
+        return Response({"comment": "new comment was added"}, status= status.HTTP_200_OK)
     
 class LeaseListView(APIView):
     def get(self, request):
