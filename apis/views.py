@@ -56,7 +56,7 @@ class LeaseCreateView(APIView):
     def post(self, request):
         serializer = LeaseSerializer(data = request.data)
         if serializer.is_valid():
-            pno = serializer.validated_data['pno']
+            pno = serializer.validated_data.get('pno')
             cno = serializer.validated_data.get('cno')
             rdate = serializer.validated_data.get('rdate')
             fdate = serializer.validated_data.get('fdate')
@@ -214,11 +214,12 @@ class LeaseListView(APIView):
                 "pno": lease.pno
             }
             lease_list.append(data)
-        return Response(data, status= status.HTTP_200_OK)
+        return Response(lease_list, status= status.HTTP_200_OK)
 
 
 class LeaseFilterView(APIView):
-    def post(self, request, format =  None):
+    def post(self, request, format = None):
+
         leaseid = request.data.get('leaseid', None)
         cno = request.data.get('cno', None)
         pno = request.data.get('pno', None)
@@ -228,13 +229,23 @@ class LeaseFilterView(APIView):
         if leaseid:
             q_filter &= Q(leaseid = leaseid)
         if cno:
-            q_filter &= Q(cno_icontains = cno)
+            q_filter &= Q(cno__icontains = cno)
         if pno:
             q_filter &= Q(pno__icontains = pno)
 
         leases = Lease.objects.filter(q_filter)
         lease_list = []
         for lease in leases:
-            serializer = LeaseSerializer(leaseid = lease.leaseid)
-            lease_list.append(serializer.data)
+            data = {
+                "leaseid": lease.leaseid,
+                "pno": lease.pno,
+                "cno": lease.cno,
+                "mrent": lease.mrent,
+                "deposit": lease.deposit,
+                "duration": lease.duration,
+                "paymentmethod": lease.paymentmethod,
+                "rdate": lease.rdate,
+                "fdate": lease.fdate
+            }
+            lease_list.append(data)
         return Response(lease_list, status= status.HTTP_200_OK)
