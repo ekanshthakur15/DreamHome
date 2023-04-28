@@ -8,6 +8,8 @@ urlpatterns = [
     path('staff/<str:staffno>/', StaffView.as_view()),  # post staff
     path('branch/', BranchCreateView.as_view()),  # post branch
     path('lease/create/', LeaseCreateView.as_view()),  # post lease
+    path('lease_list/', LeaseListView.as_view()),
+    path('lease_filter/', LeaseFilterView.as_view()),
     path('property/register/', PropertyCreateView.as_view()),  # post property
     path('branch/<str:br_id>/', BranchDetailView.as_view()), # get branch detail
     path('property_search/', PropertyListView.as_view()), #get the list of properties based on filters

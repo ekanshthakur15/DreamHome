@@ -35,8 +35,6 @@ class Clientrental(models.Model):
     brno = models.ForeignKey(Branches, models.DO_NOTHING,
                              db_column='Brno', blank=True, null=True)
     rdate = models.DateField(db_column='Rdate', blank=True, null=True)
-    comments = models.CharField(
-        db_column='Comments', max_length=255, blank=True, null=True)
 
     def __str__(self) -> str:
         return self.cnumber

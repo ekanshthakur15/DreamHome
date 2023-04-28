@@ -202,3 +202,39 @@ class CommentView(APIView):
         invoice.update(comment = request.data["comment"])
         invoice.save()
         return Response(status= status.HTTP_200_OK)
+    
+class LeaseListView(APIView):
+    def get(self, request):
+        leases = Lease.objects.all()
+        lease_list = []
+        for lease in leases:
+            data = {
+                "leaseid": lease.leaseid,
+                "cno": lease.cno,
+                "pno": lease.pno
+            }
+            lease_list.append(data)
+        return Response(data, status= status.HTTP_200_OK)
+
+
+class LeaseFilterView(APIView):
+    def post(self, request, format =  None):
+        leaseid = request.data.get('leaseid', None)
+        cno = request.data.get('cno', None)
+        pno = request.data.get('pno', None)
+
+        q_filter = Q()
+
+        if leaseid:
+            q_filter &= Q(leaseid = leaseid)
+        if cno:
+            q_filter &= Q(cno_icontains = cno)
+        if pno:
+            q_filter &= Q(pno__icontains = pno)
+
+        leases = Lease.objects.filter(q_filter)
+        lease_list = []
+        for lease in leases:
+            serializer = LeaseSerializer(leaseid = lease.leaseid)
+            lease_list.append(serializer.data)
+        return Response(lease_list, status= status.HTTP_200_OK)
