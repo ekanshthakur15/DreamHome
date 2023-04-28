@@ -100,6 +100,8 @@ class Property(models.Model):
     brno = models.ForeignKey(Branches, models.DO_NOTHING,
                              db_column='BrNo', blank=True, null=True)
     isavailable = models.IntegerField(db_column='isAvailable')
+    hnumber = models.CharField(
+        db_column='Hnumber', unique=True, max_length=255)
 
     class Meta:
         managed = False
@@ -128,3 +130,17 @@ class Staff(models.Model):
     class Meta:
         managed = False
         db_table = 'staff'
+
+
+class Invoice(models.Model):
+    invoiceid = models.IntegerField(db_column='InvoiceId', primary_key=True, auto_created= True)
+    pno = models.ForeignKey('Property', models.DO_NOTHING,
+                            db_column='Pno', blank=True, null=True)
+    cno = models.ForeignKey('clientrental', models.DO_NOTHING,
+                            db_column='Cno', blank=True, null=True, related_name= 'clientrental')
+    comments = models.CharField(
+        db_column='Comments', max_length=255, blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'Invoice'

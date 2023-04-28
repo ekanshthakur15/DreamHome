@@ -56,7 +56,27 @@ class LeaseCreateView(APIView):
     def post(self, request):
         serializer = LeaseSerializer(data = request.data)
         if serializer.is_valid():
-            serializer.save()
+            pno = serializer.validated_data['pno']
+            cno = serializer.validated_data.get('cno')
+            rdate = serializer.validated_data.get('rdate')
+            fdate = serializer.validated_data.get('fdate')
+            if rdate >= fdate:
+                return Response({"error":"rdate should be before "}, status= status.HTTP_400_BAD_REQUEST)
+
+            try:
+                property = Property.objects.get(pnumber = request.data['pno'])
+            except Property.DoesNotExist:
+                return Response(status= status.HTTP_404_NOT_FOUND)
+
+            if property.isavailable == 1:
+                property.isavailable = 0
+                property.save()
+                invoice = Invoice.objects.create(pno = pno, cno = cno)
+                invoice.save()
+                serializer.save()
+            else:
+                return Response({"error": "property not available"},status=status.HTTP_400_BAD_REQUEST)
+
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -95,7 +115,7 @@ class PropertyListView(APIView):
         pin = request.data.get('pin', None)
         pnumber = request.data.get('pnumber', None)
 
-        q_filters = Q()
+        q_filters = Q(isavailable = 1)
         if ptype:
             q_filters &= Q(ptype__icontains=ptype)
         if city:
@@ -130,13 +150,18 @@ class PropertyListView(APIView):
 class PropertyDetailView(APIView):
     def get(self, request, pnum):
         property = Property.objects.get(pnumber = pnum)
-        clients = property.clientrental_set.all()
+        try:
+            clients = Invoice.objects.filter(pno = pnum)
+        except Invoice.DoesNotExist:
+            print('No clients so far')
+        
         clients_info = []
         if clients:
             for client in clients:
+                cinfo = Clientrental.objects.get(cnumber = client.cno)
                 info = {
-                    "cnumber": client.cnumber,
-                    "cname":client.cname,
+                    "cnumber": client.cno.cnumber,
+                    "cname":cinfo.cname,
                     "comment": client.comments
                 }
                 clients_info.append(info)
@@ -167,3 +192,13 @@ class BranchListView(APIView):
             branch_names.append(data)
 
         return Response(branch_names, status=status.HTTP_200_OK)
+    
+class CommentView(APIView):
+    def put(self, request):
+        try:
+            invoice = Invoice.objects.get(pno = request.data['pno'], cno = request.data['cno'])
+        except Invoice.DoesNotExist:
+            return Response({"error": "no invoice found"}, status= status.HTTP_404_NOT_FOUND)
+        invoice.update(comment = request.data["comment"])
+        invoice.save()
+        return Response(status= status.HTTP_200_OK)

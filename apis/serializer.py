@@ -38,4 +38,12 @@ class LeaseSerializer(serializers.ModelSerializer):
     class Meta:
         model = Lease
         fields = '__all__'
-        
+
+class InvoiceSerialier(serializers.ModelSerializer):
+    pno = serializers.PrimaryKeyRelatedField(queryset=Property.objects.all())
+    cno = serializers.PrimaryKeyRelatedField(
+        queryset=Clientrental.objects.all())
+    class Meta:
+        model = Invoice
+        fields = '__all__'
+
