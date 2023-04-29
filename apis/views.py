@@ -71,7 +71,10 @@ class LeaseCreateView(APIView):
             if property.isavailable == 1:
                 property.isavailable = 0
                 property.save()
-                invoice = (Invoice.objects.get(pno = pno, cno = cno), None)
+                try:
+                    invoice = Invoice.objects.get(pno = pno, cno = cno)
+                except Invoice.DoesNotExist:
+                    invoice = None
                 if invoice is None:
                     invoice = Invoice.objects.create(pno=pno, cno=cno)
                     invoice.save()
