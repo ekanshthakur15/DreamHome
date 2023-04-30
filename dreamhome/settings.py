@@ -89,7 +89,7 @@ DATABASES = {
         'NAME': 'DreamHome_f1',
         'USER':'admin',
         'PASSWORD':'AwsLogin2023',
-        'HOST':'localhost',
+        'HOST':'dbsql.c65nzvqsjccn.ap-south-1.rds.amazonaws.com',
         'PORT':'3306',
         'OPTIONS': {
             'charset': 'utf8mb4',
