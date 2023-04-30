@@ -86,9 +86,9 @@ WSGI_APPLICATION = 'dreamhome.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'dreamhome',
-        'USER':'root',
-        'PASSWORD':'Ekansh@2003',
+        'NAME': 'DreamHome_f1',
+        'USER':'admin',
+        'PASSWORD':'AwsLogin2023',
         'HOST':'localhost',
         'PORT':'3306',
         'OPTIONS': {
